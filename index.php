@@ -1,37 +1,13 @@
 <?php
 //error_reporting(E_ALL);
-require_once 'mis/autoloader.php';
+define('APP', 'app/');
 
-$app = new mis\Mis();
+require_once 'mis/Mis.php';
 
-$app->route('/test', function() {echo 'null';});
-$app->route('/param(/@ddf)', 'param');
-$app->route('/class(/@dd)', 'Ttest->index');
-$app->route('/sclass/@param', 'Stest::index');
+$config = require_once APP . 'config.php';
 
-function param($param) {
-  echo $param;
-}
+$app = new mis\Mis($config);
 
-class Ttest{
-  function index($param = 'sff') {
-    echo '1';
-    echo $param;
-  }
-}
-
-class Stest{
-  static function index($param) {
-    echo $param;
-  }
-}
-
-class Ntest
-{
-  function ttest($param = 'sf') {
-    echo 'netest';
-    echo $param;
-  }
-}
+//$app->route('/', function() {echo 'null';});
 
 $app->run();

@@ -14,9 +14,9 @@ class Dispatcher
         return true;
       }
     }
-    
+
     $segs = explode('/', trim($request->url, '/'));
-    $class = isset($segs[0]) ? $segs[0] : 'home';
+    $class = $segs[0] ?: 'Home';
     $method = isset($segs[1]) ? $segs[1] : 'index';
     if(!class_exists($class) || !method_exists($class, $method)) {
       return false;
