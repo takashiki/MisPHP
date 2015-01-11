@@ -7,6 +7,10 @@ class Dispatcher
   
   public $dispatched;
   
+  public function __construct() {
+    
+  }
+  
   public function dispatch(Request $request) {    
     foreach($this->routes as $route) {
       if ($route !== false && $route->matchMethod($request->method) && $route->matchUrl($request->url)) {
@@ -41,7 +45,7 @@ class Dispatcher
     $this->routes[] = new Router($url, $callback, $methods);
   }
   
-  public function execute($callback, $params) {
+  public function execute($callback, $params = array()) {
     $params = $params ?: array();
     $params = array_values($params);
 

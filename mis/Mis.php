@@ -13,23 +13,29 @@ class Mis
   
   public $config = array();
   
+  public $events = array();
+  
   public function __construct($config) {
     $this->config($config);
     $this->loadDirs();
     spl_autoload_register(array($this, 'loadClass'));
+    set_exception_handler(array($this, 'handleException'));
     $this->request = new Request();
     $this->dispacther = new Dispatcher();
-    set_exception_handler(array($this, 'handleException'));
+    $this->loadEvents();
   }
   
   public function run() {
     $dispacthed = $this->dispacther->dispatch($this->request);
-    if(!$dispacthed) {
-      echo 'false';
+    if (!$dispacthed) {
+      $this->dispacther->execute($this->events['notFound']);
     }
   }
   
   public function route($pattern, $callback) {
+    if (array_key_exists($pattern, $this->events)) {
+      $this->events[$pattern] = $callback;
+    }
     $this->dispacther->map($pattern, $callback);
   }
   
@@ -93,5 +99,11 @@ class Mis
     } else {
       $this->config[$name] = $value;
     }
+  }
+  
+  public function loadEvents() {
+    $this->events['notFound'] = function() {
+      echo 'default 404';
+    };
   }
 }
