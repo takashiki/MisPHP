@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL);
+//error_reporting(E_ALL);
 require_once 'mis/autoloader.php';
 
 $app = new mis\Mis();
