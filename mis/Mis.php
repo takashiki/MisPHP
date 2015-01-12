@@ -35,8 +35,9 @@ class Mis
   public function route($pattern, $callback) {
     if (array_key_exists($pattern, $this->events)) {
       $this->events[$pattern] = $callback;
+    } else {
+      $this->dispacther->map($pattern, $callback);
     }
-    $this->dispacther->map($pattern, $callback);
   }
   
   public function handleException(\Exception $e) {
