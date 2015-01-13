@@ -23,6 +23,7 @@ class Mis
     $this->request = new Request();
     $this->dispacther = new Dispatcher();
     $this->loadEvents();
+    Conn::init($this->config['db']);
   }
   
   public function run() {

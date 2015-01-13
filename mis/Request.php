@@ -4,18 +4,10 @@ namespace mis;
 class Request
 {
   public $base;
+  
   public $url;
-  public $referrer;
+
   public $method;
-  public $ip;
-  public $ajax;
-  public $scheme;
-  public $user_agent;
-  public $type;
-  public $length;
-  public $secure;
-  public $accept;
-  public $real_ip;
   
   public function __construct() {
     $this->base = str_replace(array('\\',' '), array('/','%20'), dirname($this->getVar('SCRIPT_NAME')));
