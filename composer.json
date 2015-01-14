@@ -1,0 +1,12 @@
+{
+  "require": {
+
+  },
+  "autoload": {
+    "classmap": [
+      "app/controller",
+      "app/model",
+      "mis"
+    ]
+  }
+}

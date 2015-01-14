@@ -2,7 +2,7 @@
 //error_reporting(E_ALL);
 define('APP', 'app/');
 
-require_once 'mis/Mis.php';
+require_once 'vendor/autoload.php';
 
 $config = require_once APP . 'config.php';
 
