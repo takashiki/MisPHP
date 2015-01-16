@@ -4,9 +4,7 @@ define('APP', 'app/');
 
 require_once 'vendor/autoload.php';
 
-$config = require_once APP . 'config.php';
-
-$app = new mis\Mis($config);
+$app = new mis\Mis();
 
 $app->route('notFound', function() {
   echo 'rewrite 404';

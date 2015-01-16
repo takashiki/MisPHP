@@ -29,7 +29,7 @@ class Conn
 	{
 		try {
       if (!is_array($options)) {
-        throw new Exception('数据库配置不正确');
+        throw new \Exception('数据库配置不正确');
       }
       
       foreach ($options as $option => $value) {
@@ -100,7 +100,7 @@ class Conn
 			}
 		}
 		catch (PDOException $e) {
-			throw new Exception($e->getMessage());
+			throw new \Exception($e->getMessage());
 		}
 	}
   
