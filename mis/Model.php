@@ -10,7 +10,7 @@ class Model
   public $query;
   
   public function __construct($table = null) {
-    $this->pdo = Conn::getConn();
+    $this->pdo = Database::getConn();
     $this->table = $table;
   }
   

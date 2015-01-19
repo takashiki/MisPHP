@@ -3,21 +3,17 @@ namespace mis;
 
 class Config
 {
-  public static $instance;
+  private static $instance;
   
   public $config = array();
   
-  public function __construct() {
+  private function __construct() {
     $configs = glob(APP . 'config/*.php');
     
     foreach ($configs as $config) {
       $key = substr($config, strrpos($config, '/') + 1, -4);
       $this->config[$key] = require $config;
     }
-  }
-  
-  public static function getConfig() {
-    
   }
   
   public static function get($key = null) {
@@ -45,4 +41,8 @@ class Config
       $config[$key] = $value;
     }
   }
+  
+  private function __clone() {}
+
+  private function __wakeup() {}
 }

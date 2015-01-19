@@ -4,15 +4,15 @@
   "homepage": "http://qxblog.sinaapp.com",
   "license": "MIT",
   "authors": [
-      {
-          "name": "takashiki",
-          "email": "857995137@qq.com",
-          "homepage": "http://qxblog.sinaapp.com",
-          "role": "A Developer"
-      }
+    {
+      "name": "takashiki",
+      "email": "857995137@qq.com",
+      "homepage": "http://qxblog.sinaapp.com",
+      "role": "A Developer"
+    }
   ],
   "require": {
-      "php": ">=5.3.0"
+    "php": ">=5.3.0"
   },
   "autoload": {
     "classmap": [
