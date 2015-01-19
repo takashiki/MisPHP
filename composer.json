@@ -12,7 +12,10 @@
     }
   ],
   "require": {
-    "php": ">=5.3.0"
+    "php": ">=5.3.0",
+    "ext-openssl": "*",
+    "ext-mcrypt": "*",
+    "ext-mbstring": "*"
   },
   "autoload": {
     "classmap": [
