@@ -1,6 +1,8 @@
 <?php
 namespace mis\net;
 
+use Exception;
+
 class Dispatcher
 {
   protected $routes = array();
@@ -62,7 +64,7 @@ class Dispatcher
     if (is_callable($callback)) {
       call_user_func_array($callback, $params);
     } else {
-      throw new \Exception('Invalid callback specified');
+      throw new Exception('Invalid callback specified');
     }
   }
 }
