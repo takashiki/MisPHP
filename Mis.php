@@ -19,7 +19,7 @@ class Mis
     $this->request = new Request();
     $this->dispacther = new Dispatcher();
     $this->loadEvents();
-    Conn::init(Config::get('db'));
+    DatabaseManager::init(Config::get('db'));
   }
   
   public function run() {

@@ -1,9 +1,13 @@
 <?php
 namespace mis;
 
+use PDO;
+use Exception;
+use PDOException;
+
 class Database
 {
-  public static $pdo;
+  public $pdo;
   
   public $db_type;
   
@@ -24,6 +28,8 @@ class Database
   public $socket;
   
   public $option = array();
+  
+  protected $log = array();
   
   public function __construct($options = null)
 	{
@@ -93,22 +99,21 @@ class Database
 				$commands[] = "SET NAMES '" . $this->charset . "'";
 			}
 
-			self::$pdo = new \PDO($dsn, $this->username, $this->password, $this->option);
+			$this->pdo = new PDO($dsn, $this->username, $this->password, $this->option);
 
 			foreach ($commands as $value) {
-				self::$pdo->exec($value);
+				$this->pdo->exec($value);
 			}
 		}
-		catch (\PDOException $e) {
-			throw new \Exception($e->getMessage());
+		catch (PDOException $e) {
+			throw new Exception($e->getMessage());
 		}
 	}
   
-  public static function getConn() {
-    if (!self::$pdo instanceof \PDO) {
-      new self(Config::get('db'));
-    }
-    
-    return self::$pdo;
-  }
+  public function query($query)
+	{
+		array_push($this->log, $query);
+
+		return $this->pdo->query($query);
+	}
 }
