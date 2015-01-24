@@ -1,6 +1,10 @@
 <?php
 namespace mis;
 
+use mis\net\Request;
+use mis\net\Dispatcher;
+use mis\db\DatabaseManager;
+
 class Mis
 {
   protected $request;

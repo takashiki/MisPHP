@@ -1,6 +1,8 @@
 <?php
 namespace mis\core;
 
+use mis\db\DatabaseManager;
+
 class Model
 {
   public $db;

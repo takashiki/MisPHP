@@ -1,7 +1,7 @@
 <?php
 namespace mis\db;
 
-use mis\Database;
+use mis\db\Database;
 
 class DatabaseManager
 {
