@@ -1,5 +1,5 @@
 <?php
-namespace mis;
+namespace mis\core;
 
 class Controller
 {

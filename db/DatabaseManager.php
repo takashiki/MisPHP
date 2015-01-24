@@ -1,5 +1,5 @@
 <?php
-namespace mis;
+namespace mis\db;
 
 use mis\Database;
 

@@ -1,5 +1,5 @@
 <?php
-namespace mis;
+namespace mis\db;
 
 use PDO;
 use Exception;
