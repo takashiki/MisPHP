@@ -1,6 +1,7 @@
 <?php
 namespace mis\core;
 
+use PDO;
 use mis\db\DatabaseManager;
 
 class Model
@@ -19,6 +20,6 @@ class Model
   public function all() {
     $query = $this->db->query("select * from " . $this->table);
     
-    return $query ? $query->fetchAll(\PDO::FETCH_ASSOC) : false;
+    return $query ? $query->fetchAll(PDO::FETCH_ASSOC) : false;
   }
 }

@@ -17,8 +17,8 @@ class Mis
   
   public $events = array();
   
-  public function __construct($config) {
-    $this->config = $config;
+  public function __construct() {
+    $this->config = Config::get('app');
     set_exception_handler(array($this, 'handleException'));
     $this->request = new Request();
     $this->dispacther = new Dispatcher();
