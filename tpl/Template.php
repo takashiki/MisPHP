@@ -9,12 +9,6 @@ class Template
   
   public $cache_dir;
   
-  public $compile_file;
-  
-  public $cache_file;
-  
-  private $data;
-  
   private $yields;
   
   public function __construct($dirs) {
@@ -39,8 +33,8 @@ class Template
   }
   
   public function fetch($file) {
-    if (! is_file($file)) {
-      throw new Exception("模版文件不存在！");
+    if (! is_file('app/view/common/frame.php')) {
+      throw new Exception($file . "模版文件不存在！");
     }
     
     return file_get_contents($file);
