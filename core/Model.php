@@ -14,7 +14,7 @@ class Model
   
   public function __construct($table = null) {
     $this->db = DatabaseManager::get();
-    $this->table = $table;
+    $this->db->setTable = $table;
   }
   
   public function all() {

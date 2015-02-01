@@ -18,11 +18,6 @@ class View
       self::$tpl = new Template(Config::get('dirs'));
     }
     
-    $viewFile = 'app/view/' . $view . '.php';
-    if (! is_file($viewFile)) {
-      throw new Exception('视图文件不存在');
-    }
-    
-    return self::$tpl->render($viewFile, $data, $toString);
+    return self::$tpl->render($view, $data, $toString);
   }
 }

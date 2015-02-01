@@ -16,9 +16,9 @@ class Template
     $this->cache_dir = $dirs['cache'];
   }
   
-  public function render($file, $data, $toString = false) {
-    
-    $compile_file = $this->compile($file);
+  public function render($view, $data, $toString = false) {
+    $view_file = $this->view_dir . DIRECTORY_SEPARATOR . $view . '.php';
+    $compile_file = $this->compile($view_file);
     
     extract($data);
     ob_start();
@@ -33,7 +33,7 @@ class Template
   }
   
   public function fetch($file) {
-    if (! is_file('app/view/common/frame.php')) {
+    if (! is_file($file)) {
       throw new Exception($file . "模版文件不存在！");
     }
     
@@ -45,10 +45,11 @@ class Template
       $tpl = $this->fetch($tpl);
     } 
     
-    $compile_file = $this->cache_dir . '/' . md5($tpl) . '.rtpl';
-    if (! is_file($compile_file)) {    
+    $compile_file = $this->cache_dir . DIRECTORY_SEPARATOR . md5($tpl) . '.rtpl';
+    if (! is_file($compile_file)) { 
       $code = $this->compileString($tpl);
       file_put_contents($compile_file, $code);
+      file_put_contents('saekv://config.php', $code);
     }
     
     return $compile_file;
@@ -56,9 +57,7 @@ class Template
   
   public function compileString($tpl) {
     $code = preg_replace_callback('/{yield=(?P<yield>\w+)}/U',
-      function ($matches) {
-        return $this->yields[$matches['yield']];
-      },
+      array($this, 'replaceYield'),
       $tpl
     );
     
@@ -70,11 +69,15 @@ class Template
         $this->yields[$sections['section'][$i]] = $sections['content'][$i];
       }
       
-      $extendsFile = $this->view_dir . '/' . $extends['extends'] . '.php';
+      $extendsFile = $this->view_dir . DIRECTORY_SEPARATOR . $extends['extends'] . '.php';
       $extendsTpl = $this->fetch($extendsFile);
       $code = $this->compileString($extendsTpl);
     }
     
     return $code;
+  }
+    
+  public function replaceYield($matches) {
+    return $this->yields[$matches['yield']];
   }
 }

@@ -31,8 +31,7 @@ class Database
   
   protected $log = array();
   
-  public function __construct($options = null)
-	{
+  public function __construct($options = null) {
 		try {
       if (!is_array($options)) {
         throw new \Exception('数据库配置不正确');
@@ -110,10 +109,35 @@ class Database
 		}
 	}
   
-  public function query($query)
-	{
+  public function query($query)	{
 		array_push($this->log, $query);
 
 		return $this->pdo->query($query);
 	}
+
+	public function exec($query) {
+		array_push($this->logs, $query);
+
+		return $this->pdo->exec($query);
+	}
+
+	public function quote($string) {
+		return $this->pdo->quote($string);
+	}
+  
+  public function select($columns = null)	{
+		
+	}
+  
+  public function from($tables) {
+    
+  }
+  
+  public function join($tables) {
+    
+  }
+  
+  public function where($clause) {
+    
+  }
 }
