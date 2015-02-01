@@ -1,5 +1,5 @@
 <?php 
-namespace mis\db\onnector;
+namespace mis\db\connector;
 
 interface ConnectorInterface 
 {

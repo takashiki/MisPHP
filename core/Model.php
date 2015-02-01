@@ -2,7 +2,8 @@
 namespace mis\core;
 
 use PDO;
-use mis\db\DatabaseManager;
+use mis\db\connector\MySqlConnector;
+use mis\Config;
 
 class Model
 {
