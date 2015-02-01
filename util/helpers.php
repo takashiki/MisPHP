@@ -6,7 +6,8 @@ if (! function_exists('value')) {
 	 * @param  mixed  $value
 	 * @return mixed
 	 */
-  function value($value) {
+  function value($value) 
+  {
 		return $value instanceof Closure ? $value() : $value;
 	}
 }
@@ -19,8 +20,13 @@ if (! function_exists('env')) {
 	 * @param  mixed   $default
 	 * @return mixed
 	 */
-  function env($key, $default = null)	{
-		$value = getenv($key);
+  function env($key, $default = null)	
+  {
+		if (defined($key)) {
+      return constant($key);
+    }
+    
+    $value = getenv($key);
 
 		if ($value === false) return value($default);
 
@@ -56,14 +62,15 @@ if (! function_exists('array_get')) {
 	 * @param  mixed   $default
 	 * @return mixed
 	 */
-  function array_get($array, $key, $default = null) {  
+  function array_get($array, $key, $default = null) 
+  {  
     if (is_null($key)) return $array;
 
 		if (isset($array[$key])) return $array[$key];
 
 		foreach (explode('.', $key) as $segment)
 		{
-			if ( ! is_array($array) || ! array_key_exists($segment, $array))
+			if (! is_array($array) || ! array_key_exists($segment, $array))
 			{
 				return value($default);
 			}

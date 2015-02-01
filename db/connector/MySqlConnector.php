@@ -71,7 +71,7 @@ class MySqlConnector extends Connector implements ConnectorInterface
   {
 		extract($config);
 
-		return "mysql:unix_socket={$config['unix_socket']};dbname={$database}";
+		return "mysql:unix_socket={$config['socket']};dbname={$database}";
 	}
   
   /**
