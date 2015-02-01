@@ -13,7 +13,8 @@ class Model
   public $query;
   
   public function __construct($table = null) {
-    $this->db = DatabaseManager::get();
+    $mc = new MySqlConnector();
+    $this->db = $mc->connect(Config::get('db'));
     $this->db->setTable = $table;
   }
   
