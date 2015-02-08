@@ -3,27 +3,90 @@ namespace mis\db\teck;
 
 use PDO;
 use mis\db\connector\MySqlConnector;
-use mis\Config;
+use mis\db\query\Builder as QueryBuilder;
 
 class Model
-{
-  public $db;
+{  
+  /**
+	 * The connection name for the model.
+	 *
+	 * @var string
+	 */
+	protected $connection;
+
+	/**
+	 * The table associated with the model.
+	 *
+	 * @var string
+	 */
+	protected $table;
+
+	/**
+	 * The primary key for the model.
+	 *
+	 * @var string
+	 */
+	protected $primaryKey = 'id';
+
+	/**
+	 * The number of models to return for pagination.
+	 *
+	 * @var int
+	 */
+	protected $perPage = 15;
+
+	/**
+	 * Indicates if the IDs are auto-incrementing.
+	 *
+	 * @var bool
+	 */
+	public $incrementing = true;
   
-  public $table;
-  
-  public $query;
-  
-  public function __construct($table = null) {
-    $mc = new MySqlConnector();
-    $this->db = $mc->connect(Config::get('db'));
-    $this->db->setTable = $table;
-  }
-  
-  public function all() {
-    $query = $this->db->query("select * from " . $this->table);
+  /**
+	 * Create a new Teck model instance.
+	 *
+	 * @param  array  $attributes
+	 * @return void
+	 */
+  public function __construct() {
     
-    return $query ? $query->fetchAll(PDO::FETCH_ASSOC) : false;
   }
   
-  public function 
+  /**
+	 * Get a new query builder for the model's table.
+	 *
+	 * @return \mis\db\teck\Builder
+	 */
+	public function newQuery() {
+		//$builder = $this->newQueryWithoutScopes();
+
+		//return $this->applyGlobalScopes($builder);
+    return new QueryBuilder();
+	}
+  
+  /**
+	 * Handle dynamic static method calls into the method.
+	 *
+	 * @param  string  $method
+	 * @param  array   $parameters
+	 * @return mixed
+	 */
+	public static function __callStatic($method, $parameters)	{
+		$instance = new static;
+
+		return call_user_func_array(array($instance, $method), $parameters);
+	}
+  
+  /**
+	 * Handle dynamic method calls into the method.
+	 *
+	 * @param  string  $method
+	 * @param  array   $parameters
+	 * @return mixed
+	 */
+	public function __call($method, $parameters) {
+		$query = $this->newQuery();
+
+		return call_user_func_array(array($query, $method), $parameters);
+	}
 }
