@@ -1,8 +1,8 @@
 <?php
-namespace mis\core;
+namespace mis\view;
 
 use Exception;
-use mis\tpl\Template;
+use mis\view\tpl\Template;
 use mis\Config;
 
 class View
