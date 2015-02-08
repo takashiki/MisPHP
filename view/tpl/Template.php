@@ -1,5 +1,5 @@
 <?php
-namespace mis\tpl;
+namespace mis\view\tpl;
 
 use Exception;
 
