@@ -1,6 +1,9 @@
 <?php
 namespace mis\db\query;
 
+use mis\db\connection\ConnectionInterface;
+use mis\db\grammar\Grammar;
+
 class Builder
 {
   /**
@@ -108,6 +111,18 @@ class Builder
 	);
   
   /**
+	 * Create a new query builder instance.
+	 *
+	 * @param  \mis\db\connection\ConnectionInterface  $connection
+	 * @param  \mis\db\grammar\Grammar  $grammar
+	 * @return void
+	 */
+	public function __construct(ConnectionInterface $connection, Grammar $grammar) {
+		$this->grammar = $grammar;
+		$this->connection = $connection;
+	}
+  
+  /**
 	 * Set the columns to be selected.
 	 *
 	 * @param  array  $columns
@@ -164,17 +179,31 @@ class Builder
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-  public function where($column, $value = null, $boolean = 'and') {
+  public function where($column, $value = null, $boolean = 'and') {    
+    $where = $this->parseWhere($column, $value, $boolean);
+    
+    if (is_array($where)) {
+      $this->wheres['Basic'][] = $where;
+    }
+    
+    return $this;
+  }
+  
+  /**
+	 * parse where query
+	 *
+	 * @param  string  $column
+	 * @param  mixed   $value
+	 * @param  string  $boolean
+	 * @return mixed 
+	 */
+  public function parseWhere($column, $value = null, $boolean = 'and') {
     if (is_array($column)) {
       if (func_num_args() == 2) {
         $boolean = $filter;
       }
       
-      return $this->whereNested(function($query) use ($column) {
-        foreach ($column as $key => $value) {
-          $query->where($key, $value, $boolean);
-        }
-      }, $boolean);
+      return $this->whereNested($column, $boolean);
     }
     
     list($column, $operator) = $this->parseColumn($column);
@@ -183,24 +212,8 @@ class Builder
       return $this->whereNull($column, $boolean, $operator != '=');
     }
     
-    $type = 'Basic';
-    $this->wheres[] = compact('type', 'column', 'operator', 'value', 'boolean');
-    
-    return $this;
+    return compact('column', 'operator', 'value', 'boolean');
   }
-
-  /**
-	 * Add an "or where" clause to the query.
-	 *
-	 * @param  string  $column
-	 * @param  string  $operator
-	 * @param  mixed   $value
-	 * @return $this|static
-	 */
-	public function orWhere($column, $filter = null)
-	{
-		return $this->where($column, $filter, 'or');
-	}
   
   /**
 	 * Add a "where null" clause to the query.
@@ -213,7 +226,26 @@ class Builder
 	public function whereNull($column, $boolean = 'and', $not = false) {
 		$type = $not ? 'NotNull' : 'Null';
 
-		$this->wheres[] = compact('type', 'column', 'boolean');
+		$this->wheres[$type][] = compact('column', 'boolean');
+
+		return $this;
+	}
+  
+  /**
+	 * Add a "where nested" clause to the query.
+	 *
+	 * @param  string  $column
+   * @param  string  $boolean
+	 * @return $this
+	 */
+	public function whereNested($columns, $boolean = 'and') {    
+    $nested_where = array();
+    
+    foreach ($columns as $key => $value) {
+      $nested_where[] = $this->parseWhere($key, $value, $boolean);
+    }
+    
+    $this->wheres['Nested'][] = $nested_where;
 
 		return $this;
 	}
@@ -242,11 +274,11 @@ class Builder
 	}
   
   /**
-	 * Get the SQL representation of the query.
+	 * Get the select SQL representation of the query.
 	 *
 	 * @return string
 	 */
 	public function toSql() {
-		return $this->grammar->compileSql($this);
+		return $this->grammar->compileSelect($this);
 	}
 }

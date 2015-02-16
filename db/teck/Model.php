@@ -3,7 +3,9 @@ namespace mis\db\teck;
 
 use PDO;
 use mis\db\connector\MySqlConnector;
+use mis\db\teck\Builder as TeckBuilder;
 use mis\db\query\Builder as QueryBuilder;
+use mis\db\DatabaseManager as Resolver;
 
 class Model
 {  
@@ -43,6 +45,13 @@ class Model
 	public $incrementing = true;
   
   /**
+	 * The connection resolver instance.
+	 *
+	 * @var \mis\db\ConnectionResolverInterface
+	 */
+	protected static $resolver;
+  
+  /**
 	 * Create a new Teck model instance.
 	 *
 	 * @param  array  $attributes
@@ -53,15 +62,49 @@ class Model
   }
   
   /**
+	 * Get the table associated with the model.
+	 *
+	 * @return string
+	 */
+	public function getTable()
+	{
+		if (isset($this->table)) return $this->table;
+
+		return str_replace('\\', '', snake_case(str_plural(class_basename($this))));
+	}
+  
+  /**
 	 * Get a new query builder for the model's table.
 	 *
 	 * @return \mis\db\teck\Builder
 	 */
 	public function newQuery() {
-		//$builder = $this->newQueryWithoutScopes();
+		$builder = $this->newQueryWithoutScopes();
 
 		//return $this->applyGlobalScopes($builder);
-    return new QueryBuilder();
+    return $builder;
+	}
+  
+  /**
+	 * Get a new query builder that doesn't have any global scopes.
+	 *
+	 * @return \mis\db\Teck\Builder|static
+	 */
+	public function newQueryWithoutScopes()
+	{
+		$builder = new TeckBuilder($this->newBaseQueryBuilder());
+
+		return $builder->setModel($this)->with($this->with);
+	}
+  
+  /**
+	 * Set the connection resolver instance.
+	 *
+	 * @param  \mis\db  $resolver
+	 * @return void
+	 */
+	public static function setConnectionResolver(Resolver $resolver) {
+		static::$resolver = $resolver;
 	}
   
   /**

@@ -4,6 +4,7 @@ namespace mis;
 use mis\net\Request;
 use mis\net\Dispatcher;
 use mis\db\DatabaseManager;
+use mis\db\Capsule;
 
 class Mis
 {
@@ -18,12 +19,14 @@ class Mis
   public $events = array();
   
   public function __construct() {
-    $this->config = Config::get('app');
+    $this->config = Config::get();
     set_exception_handler(array($this, 'handleException'));
     $this->request = new Request();
     $this->dispacther = new Dispatcher();
     $this->loadEvents();
     //DatabaseManager::init(Config::get('db'));
+    $capsule = new Capsule($this);
+    $capsule->bootTeck();
   }
   
   public function run() {

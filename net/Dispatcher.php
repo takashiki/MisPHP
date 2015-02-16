@@ -22,7 +22,7 @@ class Dispatcher
     }
 
     $segs = explode('/', trim($request->url, '/'));
-    $class = $segs[0] ?: 'Home';
+    $class = $segs[0] ? $segs[0] . 'Controller' : 'HomeController';
     $method = isset($segs[1]) ? $segs[1] : 'index';
     if(!class_exists($class) || !method_exists($class, $method)) {
       return false;
