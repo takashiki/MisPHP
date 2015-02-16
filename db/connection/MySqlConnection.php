@@ -3,7 +3,7 @@ namespace mis\db\connection;
 
 use mis\db\grammar\MySqlGrammar as QueryGrammar;
 
-class MySqlConnectio extends Connection
+class MySqlConnection extends Connection
 {
   /**
 	 * Get the default query grammar instance.

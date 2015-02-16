@@ -3,7 +3,7 @@ namespace mis\db\grammar;
 
 use mis\db\query\Builder;
 
-class Grammars
+class Grammar
 {
   /**
 	 * The grammar table prefix.

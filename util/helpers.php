@@ -81,3 +81,35 @@ if (! function_exists('array_get')) {
 		return $array;
   }
 }
+
+if (! function_exists('class_basename')) {
+	/**
+	 * Get the class "basename" of the given object / class.
+	 *
+	 * @param  string|object  $class
+	 * @return string
+	 */
+	function class_basename($class)
+	{
+		$class = is_object($class) ? get_class($class) : $class;
+
+		return basename(str_replace('\\', '/', $class));
+	}
+}
+
+if (! function_exists('array_flatten')) {
+  /**
+	 * Flatten a multi-dimensional array into a single level.
+	 *
+	 * @param  array  $array
+	 * @return array
+	 */
+  function array_flatten($array)
+	{
+		$return = array();
+
+		array_walk_recursive($array, function($x) use (&$return) { $return[] = $x; });
+
+		return $return;
+	}
+}

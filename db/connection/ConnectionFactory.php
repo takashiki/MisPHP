@@ -3,6 +3,7 @@ namespace mis\db\connection;
 
 use PDO;
 use mis\db\connection\MySqlConnection;
+use mis\db\connector\MySqlConnector;
 
 class ConnectionFactory
 {

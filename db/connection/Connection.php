@@ -194,6 +194,31 @@ class Connection implements ConnectionInterface
 	}
   
   /**
+	 * Prepare the query bindings for execution.
+	 *
+	 * @param  array  $bindings
+	 * @return array
+	 */
+	public function prepareBindings(array $bindings)
+	{
+		$grammar = $this->getQueryGrammar();
+
+		/*foreach ($bindings as $key => $value)
+		{
+			if ($value instanceof DateTime)
+			{
+				$bindings[$key] = $value->format($grammar->getDateFormat());
+			}
+			elseif ($value === false)
+			{
+				$bindings[$key] = 0;
+			}
+		}*/
+
+		return $bindings;
+	}
+  
+  /**
 	 * Get the current PDO connection.
 	 *
 	 * @return \PDO
@@ -208,7 +233,7 @@ class Connection implements ConnectionInterface
 	 * @return \PDO
 	 */
 	public function getReadPdo() {
-		if ($this->transactions >= 1) return $this->getPdo();
+		//if ($this->transactions >= 1) return $this->getPdo();
 
 		return $this->readPdo ?: $this->pdo;
 	}
@@ -259,10 +284,19 @@ class Connection implements ConnectionInterface
 	 * @param  \mis\db\grammar\Grammar  $grammar
 	 * @return \mis\db\grammar\Grammar
 	 */
-	public function withTablePrefix(Grammar $grammar) {
+	public function withTablePrefix($grammar) {
 		$grammar->setTablePrefix($this->tablePrefix);
 
 		return $grammar;
+	}
+  
+  /**
+	 * Get the default fetch mode for the connection.
+	 *
+	 * @return int
+	 */
+	public function getFetchMode() {
+		return $this->fetchMode;
 	}
   
   /**
@@ -273,5 +307,15 @@ class Connection implements ConnectionInterface
 	 */
 	public function setFetchMode($fetchMode) {
 		$this->fetchMode = $fetchMode;
+	}
+  
+  /**
+	 * Get the elapsed time since a given starting point.
+	 *
+	 * @param  int    $start
+	 * @return float
+	 */
+	protected function getElapsedTime($start) {
+		return round((microtime(true) - $start) * 1000, 2);
 	}
 }

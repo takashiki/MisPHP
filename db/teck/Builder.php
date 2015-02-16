@@ -1,6 +1,8 @@
 <?php
 namespace mis\db\teck;
 
+use mis\db\query\Builder as QueryBuilder;
+
 class Builder
 {
   /**
@@ -16,6 +18,16 @@ class Builder
 	 * @var \mis\db\teck\Model
 	 */
 	protected $model;
+  
+  /**
+	 * The methods that should be returned from query builder.
+	 *
+	 * @var array
+	 */
+	protected $passthru = array(
+		'toSql', 'lists', 'insert', 'insertGetId', 'pluck', 'count',
+		'min', 'max', 'avg', 'sum', 'exists', 'getBindings',
+	);
   
   /**
 	 * Create a new Teck query builder instance.
@@ -39,5 +51,20 @@ class Builder
 		$this->query->from($model->getTable());
 
 		return $this;
+	}
+  
+  /**
+	 * Dynamically handle calls into the query instance.
+	 *
+	 * @param  string  $method
+	 * @param  array   $parameters
+	 * @return mixed
+	 */
+	public function __call($method, $parameters)
+	{
+		$result = call_user_func_array(array($this->query, $method), $parameters);
+
+    return $result;
+		//return in_array($method, $this->passthru) ? $result : $this;
 	}
 }

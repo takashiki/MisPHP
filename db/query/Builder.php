@@ -21,6 +21,26 @@ class Builder
 	protected $grammar;
   
   /**
+	 * The current query value bindings.
+	 *
+	 * @var array
+	 */
+	protected $bindings = array(
+		'select' => [],
+		'join'   => [],
+		'where'  => [],
+		'having' => [],
+		'order'  => [],
+	);
+  
+  /**
+	 * An aggregate function and column to be run.
+	 *
+	 * @var array
+	 */
+	public $aggregate;
+  
+  /**
 	 * The columns that should be returned.
 	 *
 	 * @var array
@@ -96,6 +116,13 @@ class Builder
 	 * @var array
 	 */
 	public $unions;
+  
+  /**
+	 * Indicates whether row locking is being used.
+	 *
+	 * @var string|bool
+	 */
+	public $lock;
   
   /**
 	 * All of the available clause operators.
@@ -271,6 +298,16 @@ class Builder
     }
     
     return compact($column, $operator);
+	}
+  
+  /**
+	 * Get the current query value bindings in a flattened array.
+	 *
+	 * @return array
+	 */
+	public function getBindings()
+	{
+		return array_flatten($this->bindings);
 	}
   
   /**

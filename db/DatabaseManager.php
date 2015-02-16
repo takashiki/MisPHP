@@ -47,8 +47,6 @@ class DatabaseManager
 	 */
 	public function connection($name = null)
 	{
-		list($name, $type) = $this->parseConnectionName($name);
-
 		if (! isset($this->connections[$name])) {
 			$connection = $this->makeConnection($name);
 
@@ -59,13 +57,33 @@ class DatabaseManager
 	}
   
   /**
+	 * Make the database connection instance.
+	 *
+	 * @param  string  $name
+	 * @return \Illuminate\Database\Connection
+	 */
+	protected function makeConnection($name) {
+		$config = $this->getConfig($name);
+
+		$driver = $config['driver'];
+
+		return $this->factory->make($config, $name);
+	}
+  
+  protected function getConfig($name) {
+		$config = $this->app->config['db'];
+
+		return $config;
+	}
+  
+  /**
 	 * Prepare the database connection instance.
 	 *
 	 * @param  \mis\db\connection\Connection  $connection
 	 * @return \mis\db\connection\Connection
 	 */
-	protected function prepare(Connection $connection) {
-		$connection->setFetchMode($this->app['config']['db']['fetch']);
+	protected function prepare($connection) {
+		//$connection->setFetchMode($this->app->config['db']['fetch']);
     
 		return $connection;
 	}

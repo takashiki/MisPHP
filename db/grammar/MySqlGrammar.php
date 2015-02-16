@@ -2,6 +2,7 @@
 namespace mis\db\grammar;
 
 use mis\db\grammar\Grammar;
+use mis\db\query\Builder;
 
 class MySqlGrammar extends Grammar
 {
@@ -27,7 +28,7 @@ class MySqlGrammar extends Grammar
   /**
 	 * Compile a select query into SQL.
 	 *
-	 * @param  \Illuminate\Database\Query\Builder
+	 * @param  \mis\db\query\Builder
 	 * @return string
 	 */
 	public function compileSelect(Builder $query) {

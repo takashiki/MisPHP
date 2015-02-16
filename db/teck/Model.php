@@ -70,7 +70,7 @@ class Model
 	{
 		if (isset($this->table)) return $this->table;
 
-		return str_replace('\\', '', snake_case(str_plural(class_basename($this))));
+		return str_replace('\\', '', class_basename($this));
 	}
   
   /**
@@ -94,7 +94,29 @@ class Model
 	{
 		$builder = new TeckBuilder($this->newBaseQueryBuilder());
 
-		return $builder->setModel($this)->with($this->with);
+		return $builder->setModel($this);
+	}
+  
+  /**
+	 * Get a new query builder instance for the connection.
+	 *
+	 * @return \mis\db\query\Builder
+	 */
+	protected function newBaseQueryBuilder() {
+		$conn = $this->getConnection();
+
+		$grammar = $conn->getQueryGrammar();
+
+		return new QueryBuilder($conn, $grammar);
+	}
+  
+  /**
+	 * Get the database connection for the model.
+	 *
+	 * @return \mis\db\connection\Connection
+	 */
+	public function getConnection() {
+		return static::resolveConnection($this->connection);
 	}
   
   /**
@@ -105,6 +127,16 @@ class Model
 	 */
 	public static function setConnectionResolver(Resolver $resolver) {
 		static::$resolver = $resolver;
+	}
+  
+  /**
+	 * Resolve a connection instance.
+	 *
+	 * @param  string  $connection
+	 * @return \Illuminate\Database\Connection
+	 */
+	public static function resolveConnection($connection = null) {
+		return static::$resolver->connection($connection);
 	}
   
   /**
