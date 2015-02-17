@@ -48,32 +48,20 @@ class DatabaseManager
 	 * @param  string  $name
 	 * @return \mis\db\connection\Connection
 	 */
-	public function connection($name = null)
-	{
-		if (! isset($this->connections[$name])) {
-			$connection = $this->makeConnection($name);
-
-			$this->connections[$name] = $this->prepare($connection);
-		}
-
-		return $this->connections[$name];
-	}
-  
-  /**
-	 * Make the database connection instance.
-	 *
-	 * @param  string  $name
-	 * @return \Illuminate\Database\Connection
-	 */
-	protected function makeConnection($name) {
-		$config = $this->getConfig($name);
+	public function connection() {
+		$config = $this->getConfig();
 
 		$driver = $config['driver'];
 
-		return $this->factory->make($config, $name);
+		return $this->prepare($this->factory->make($config));
 	}
   
-  protected function getConfig($name) {
+  /**
+	 * Get database config.
+	 *
+	 * @return array
+	 */  
+  protected function getConfig() {
 		$config = $this->app->config['db'];
 
 		return $config;

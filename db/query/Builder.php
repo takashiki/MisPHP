@@ -305,8 +305,7 @@ class Builder
 	 *
 	 * @return array
 	 */
-	public function getBindings()
-	{
+	public function getBindings() {
 		return array_flatten($this->bindings);
 	}
   

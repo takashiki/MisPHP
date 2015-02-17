@@ -24,9 +24,7 @@ class Mis
     $this->request = new Request();
     $this->dispacther = new Dispatcher();
     $this->loadEvents();
-    //DatabaseManager::init(Config::get('db'));
-    $capsule = new Capsule($this);
-    $capsule->bootTeck();
+    DatabaseManager::bootTeck($this);
   }
   
   public function run() {
@@ -45,7 +43,7 @@ class Mis
   }
   
   public function handleException(\Exception $e) {
-    if ($this->config['debug'] !== false) {
+    if ($this->config['app']['debug'] !== false) {
       $traces = $e->getTrace();
       echo '<h1>Exception</h1>';
       echo '<div>'.$e->getMessage().'</div>';

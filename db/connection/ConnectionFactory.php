@@ -24,8 +24,7 @@ class ConnectionFactory
 	 * @param  array  $config
 	 * @return \Illuminate\Database\Connection
 	 */
-	protected function createSingleConnection(array $config)
-	{
+	protected function createSingleConnection(array $config) {
 		$pdo = $this->createConnector($config)->connect($config);
 
 		return $this->createConnection($config['driver'], $pdo, $config['database'], $config['prefix'], $config);
@@ -39,8 +38,7 @@ class ConnectionFactory
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function createConnector(array $config)
-	{
+	public function createConnector(array $config) {
 		if ( ! isset($config['driver']))
 		{
 			throw new Exception("A driver must be specified.");
@@ -76,8 +74,7 @@ class ConnectionFactory
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	protected function createConnection($driver, PDO $connection, $database, $prefix = '', array $config = array())
-	{
+	protected function createConnection($driver, PDO $connection, $database, $prefix = '', array $config = array()) {
 		switch ($driver)
 		{
 			case 'mysql':

@@ -3,6 +3,7 @@ namespace mis\db\connection;
 
 use PDO;
 use Closure;
+use DateTime;
 use Exception;
 use mis\db\grammar\Grammar as QueryGrammar;
 use mis\db\query\Builder as QueryBuilder;
@@ -177,21 +178,16 @@ class Connection implements ConnectionInterface
 	 * @param  array  $bindings
 	 * @return array
 	 */
-	public function prepareBindings(array $bindings)
-	{
+	public function prepareBindings(array $bindings) {
 		$grammar = $this->getQueryGrammar();
 
-		/*foreach ($bindings as $key => $value)
-		{
-			if ($value instanceof DateTime)
-			{
+		foreach ($bindings as $key => $value) {
+			if ($value instanceof DateTime) {
 				$bindings[$key] = $value->format($grammar->getDateFormat());
-			}
-			elseif ($value === false)
-			{
+			}	elseif ($value === false) {
 				$bindings[$key] = 0;
 			}
-		}*/
+		}
 
 		return $bindings;
 	}

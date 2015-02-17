@@ -70,7 +70,7 @@ class Model
 	{
 		if (isset($this->table)) return $this->table;
 
-		return str_replace('\\', '', class_basename($this));
+		return strtolower(str_replace('\\', '', class_basename($this)));
 	}
   
   /**
@@ -79,19 +79,6 @@ class Model
 	 * @return \mis\db\teck\Builder
 	 */
 	public function newQuery() {
-		$builder = $this->newQueryWithoutScopes();
-
-		//return $this->applyGlobalScopes($builder);
-    return $builder;
-	}
-  
-  /**
-	 * Get a new query builder that doesn't have any global scopes.
-	 *
-	 * @return \mis\db\Teck\Builder|static
-	 */
-	public function newQueryWithoutScopes()
-	{
 		$builder = new TeckBuilder($this->newBaseQueryBuilder());
 
 		return $builder->setModel($this);
