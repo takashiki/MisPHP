@@ -26,11 +26,11 @@ class Builder
 	 * @var array
 	 */
 	protected $bindings = array(
-		'select' => [],
-		'join'   => [],
-		'where'  => [],
-		'having' => [],
-		'order'  => [],
+		'select' => array(),
+		'join'   => array(),
+		'where'  => array(),
+		'having' => array(),
+		'order'  => array(),
 	);
   
   /**

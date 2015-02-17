@@ -1,6 +1,9 @@
 <?php
 namespace mis\db;
 
+use PDO;
+use mis\Mis;
+use mis\db\teck\Model as Teck;
 use mis\db\connection\ConnectionFactory;
 
 class DatabaseManager
@@ -33,10 +36,10 @@ class DatabaseManager
 	 * @param  \mis\db\connection\ConnectionFactory  $factory
 	 * @return void
 	 */
-	public function __construct($app, ConnectionFactory $factory)
-	{
+	public function __construct($app) {
 		$this->app = $app;
-		$this->factory = $factory;
+    $this->setupDefaultConfiguration();
+		$this->factory = new ConnectionFactory($app);
 	}
   
   /**
@@ -83,8 +86,27 @@ class DatabaseManager
 	 * @return \mis\db\connection\Connection
 	 */
 	protected function prepare($connection) {
-		//$connection->setFetchMode($this->app->config['db']['fetch']);
+		$connection->setFetchMode($this->app->config['db']['fetch']);
     
 		return $connection;
+	}
+  
+  /**
+   * Setup the default database configuration options.
+	 *
+	 * @return void
+	 */
+	protected function setupDefaultConfiguration() {
+		$this->app->config['db']['fetch'] = PDO::FETCH_ASSOC;
+	}
+  
+  /**
+	 * Bootstrap Teck so it is ready for usage.
+	 *
+	 * @return void
+	 */
+	public static function bootTeck(Mis $container = null) {
+		$manager = new static($container);
+    Teck::setConnectionResolver($manager);
 	}
 }

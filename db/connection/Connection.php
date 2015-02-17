@@ -134,16 +134,7 @@ class Connection implements ConnectionInterface
 	 * @return array
 	 */
 	public function select($query, $bindings = array(), $useReadPdo = true) {
-		return $this->run($query, $bindings, function($me, $query, $bindings) use ($useReadPdo)
-		{
-			//if ($me->pretending()) return array();
-
-			$statement = $this->getPdoForSelect($useReadPdo)->prepare($query);
-
-			$statement->execute($me->prepareBindings($bindings));
-
-			return $statement->fetchAll($me->getFetchMode());
-		});
+		return $this->run($query, $bindings, $useReadPdo);
 	}
   
   /**
@@ -166,30 +157,17 @@ class Connection implements ConnectionInterface
 	 *
 	 * @throws \mis\db\QueryException
 	 */
-	protected function run($query, $bindings, Closure $callback) {
+	protected function run($query, $bindings, $useReadPdo) {
 		$start = microtime(true);
+    
+    $statement = $this->getPdoForSelect($useReadPdo)->prepare($query);
 
-	  $result = $this->runQueryCallback($query, $bindings, $callback);
+	  $statement->execute($this->prepareBindings($bindings));
+
+		$result = $statement->fetchAll($this->getFetchMode());
 
 		$time = $this->getElapsedTime($start);
 
-		return $result;
-	}
-
-  /**
-	 * Run a SQL statement.
-	 *
-	 * @param  string    $query
-	 * @param  array     $bindings
-	 * @param  \Closure  $callback
-	 * @return mixed
-	 *
-	 * @throws \mis\db\QueryException
-	 */
-	protected function runQueryCallback($query, $bindings, Closure $callback)
-	{
-			$result = $callback($this, $query, $bindings);
-      
 		return $result;
 	}
   
