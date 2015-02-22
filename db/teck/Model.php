@@ -3,7 +3,6 @@ namespace mis\db\teck;
 
 use PDO;
 use mis\db\connector\MySqlConnector;
-use mis\db\teck\Builder as TeckBuilder;
 use mis\db\query\Builder as QueryBuilder;
 use mis\db\DatabaseManager as Resolver;
 
@@ -23,6 +22,13 @@ class Model
 	 */
 	protected $table;
 
+  /**
+	 * The base query builder instance.
+	 *
+	 * @var \mis\db\query\Builder
+	 */
+	protected $query;
+  
 	/**
 	 * The primary key for the model.
 	 *
@@ -58,7 +64,13 @@ class Model
 	 * @return void
 	 */
   public function __construct() {
+    $conn = $this->getConnection();
+
+		$grammar = $conn->getQueryGrammar();
+
+		$this->query = new QueryBuilder($conn, $grammar);
     
+    $this->query->from($this->getTable());
   }
   
   /**
@@ -66,35 +78,10 @@ class Model
 	 *
 	 * @return string
 	 */
-	public function getTable()
-	{
+	public function getTable() {
 		if (isset($this->table)) return $this->table;
 
 		return strtolower(str_replace('\\', '', class_basename($this)));
-	}
-  
-  /**
-	 * Get a new query builder for the model's table.
-	 *
-	 * @return \mis\db\teck\Builder
-	 */
-	public function newQuery() {
-		$builder = new TeckBuilder($this->newBaseQueryBuilder());
-
-		return $builder->setModel($this);
-	}
-  
-  /**
-	 * Get a new query builder instance for the connection.
-	 *
-	 * @return \mis\db\query\Builder
-	 */
-	protected function newBaseQueryBuilder() {
-		$conn = $this->getConnection();
-
-		$grammar = $conn->getQueryGrammar();
-
-		return new QueryBuilder($conn, $grammar);
 	}
   
   /**
@@ -147,8 +134,6 @@ class Model
 	 * @return mixed
 	 */
 	public function __call($method, $parameters) {
-		$query = $this->newQuery();
-
-		return call_user_func_array(array($query, $method), $parameters);
+		return call_user_func_array(array($this->query, $method), $parameters);
 	}
 }
