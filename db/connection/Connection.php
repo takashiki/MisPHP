@@ -5,7 +5,7 @@ use PDO;
 use Closure;
 use DateTime;
 use Exception;
-use mis\db\grammar\Grammar as QueryGrammar;
+use mis\db\query\grammar\Grammar as QueryGrammar;
 use mis\db\query\Builder as QueryBuilder;
 
 class Connection implements ConnectionInterface 
@@ -258,7 +258,7 @@ class Connection implements ConnectionInterface
 	 * @param  \mis\db\grammar\Grammar  $grammar
 	 * @return \mis\db\grammar\Grammar
 	 */
-	public function withTablePrefix($grammar) {
+	public function withTablePrefix(QueryGrammar $grammar) {
 		$grammar->setTablePrefix($this->tablePrefix);
 
 		return $grammar;

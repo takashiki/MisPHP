@@ -1,7 +1,8 @@
 <?php
-namespace mis\db\grammar;
+namespace mis\db\query\grammar;
 
 use mis\db\query\Builder;
+use mis\db\query\Expression;
 
 class Grammar
 {
@@ -130,10 +131,12 @@ class Grammar
 
 		if (is_null($query->wheres)) return '';
 
-		foreach ($query->wheres as $type => $where) {
+		foreach ($query->wheres as $type => $wheres) {
 			$method = "where{$type}";
 
-			$sql[] = $where['boolean'].' '.$this->$method($query, $where);
+      foreach ($wheres as $where) {
+        $sql[] = $where['boolean'].' '.$this->$method($where);
+      }
 		}
 
 		if (count($sql) > 0) {
@@ -148,25 +151,39 @@ class Grammar
   /**
 	 * Compile a basic where clause.
 	 *
-	 * @param  \mis\db\query\Builder  $query
 	 * @param  array  $where
 	 * @return string
 	 */
-	protected function whereBasic(Builder $query, $where)
-	{
+	protected function whereBasic($where) {
 		$value = $this->parameter($where['value']);
 
 		return $this->wrap($where['column']).' '.$where['operator'].' '.$value;
 	}
   
   /**
-	 * Compile a "where null" clause.
+	 * Compile a nested where clause.
 	 *
-	 * @param  \mis\db\query\Builder  $query
 	 * @param  array  $where
 	 * @return string
 	 */
-	protected function whereNull(Builder $query, $where) {
+	protected function whereNested($wheres) {
+		$query = array();
+    foreach ($wheres['filters'] as $where) {
+      $value = $this->parameter($where['value']);
+
+      $whereClause[] = $this->wrap($where['column']).' '.$where['operator'].' '.$value;
+    }
+    
+    return '(' . implode(" {$where['boolean']} ", $whereClause) . ')';
+	}
+  
+  /**
+	 * Compile a "where null" clause.
+	 *
+	 * @param  array  $where
+	 * @return string
+	 */
+	protected function whereNull($where) {
 		return $this->wrap($where['column']).' is null';
 	}
 
@@ -177,7 +194,7 @@ class Grammar
 	 * @param  array  $where
 	 * @return string
 	 */
-	protected function whereNotNull(Builder $query, $where) {
+	protected function whereNotNull($where) {
 		return $this->wrap($where['column']).' is not null';
 	}
   
@@ -253,6 +270,26 @@ class Grammar
 	}
   
   /**
+	 * Get the appropriate query parameter place-holder for a value.
+	 *
+	 * @param  mixed   $value
+	 * @return string
+	 */
+	public function parameter($value) {
+		return $this->isExpression($value) ? $value->getValue() : '?';
+	}
+  
+  /**
+	 * Determine if the given value is a raw expression.
+	 *
+	 * @param  mixed  $value
+	 * @return bool
+	 */
+	public function isExpression($value) {
+		return $value instanceof Expression;
+	}
+  
+  /**
 	 * Get the format for database stored dates.
 	 *
 	 * @return string
@@ -266,8 +303,7 @@ class Grammar
 	 *
 	 * @return string
 	 */
-	public function getTablePrefix()
-	{
+	public function getTablePrefix() {
 		return $this->tablePrefix;
 	}
 

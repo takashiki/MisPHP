@@ -1,7 +1,7 @@
 <?php
-namespace mis\db\grammar;
+namespace mis\db\query\grammar;
 
-use mis\db\grammar\Grammar;
+use mis\db\query\grammar\Grammar;
 use mis\db\query\Builder;
 
 class MySqlGrammar extends Grammar

@@ -1,7 +1,7 @@
 <?php
 namespace mis\db\connection;
 
-use mis\db\grammar\MySqlGrammar as QueryGrammar;
+use mis\db\query\grammar\MySqlGrammar as QueryGrammar;
 
 class MySqlConnection extends Connection
 {

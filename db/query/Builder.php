@@ -2,7 +2,8 @@
 namespace mis\db\query;
 
 use mis\db\connection\ConnectionInterface;
-use mis\db\grammar\Grammar;
+use mis\db\query\grammar\Grammar;
+use mis\db\query\Expression;
 
 class Builder
 {
@@ -208,7 +209,7 @@ class Builder
 	 */
   public function where($column, $value = null, $boolean = 'and') {    
     $where = $this->parseWhere($column, $value, $boolean);
-    
+
     if (is_array($where)) {
       $this->wheres['Basic'][] = $where;
     }
@@ -232,12 +233,16 @@ class Builder
       
       return $this->whereNested($column, $boolean);
     }
-    
+
     list($column, $operator) = $this->parseColumn($column);
     
     if (is_null($value)) {
       return $this->whereNull($column, $boolean, $operator != '=');
     }
+    
+    if (! $value instanceof Expression) {
+			$this->addBinding($value, 'where');
+		}
     
     return compact('column', 'operator', 'value', 'boolean');
   }
@@ -266,10 +271,10 @@ class Builder
 	 * @return $this
 	 */
 	public function whereNested($columns, $boolean = 'and') {    
-    $nested_where = array();
+    $nested_where = array('boolean' => $boolean);
     
     foreach ($columns as $key => $value) {
-      $nested_where[] = $this->parseWhere($key, $value, $boolean);
+      $nested_where['filters'][] = $this->parseWhere($key, $value, $boolean);
     }
     
     $this->wheres['Nested'][] = $nested_where;
@@ -283,8 +288,7 @@ class Builder
 	 * @param  string  $column
 	 * @return array
 	 */
-	protected function parseColumn($column)
-	{
+	protected function parseColumn($column)	{
 		$sep_pos = strpos($column, ' ');
     if ($sep_pos === false) {
       $operator = '=';
@@ -297,7 +301,31 @@ class Builder
       throw new Exception("查询条件无效");
     }
     
-    return compact($column, $operator);
+    return array($column, $operator);
+	}
+  
+  /**
+	 * Add a binding to the query.
+	 *
+	 * @param  mixed   $value
+	 * @param  string  $type
+	 * @return $this
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function addBinding($value, $type = 'where') {
+		if ( ! array_key_exists($type, $this->bindings)) {
+			throw new Exception("Invalid binding type: {$type}.");
+      //throw new InvalidArgumentException("Invalid binding type: {$type}.");
+		}
+
+		if (is_array($value)) {
+			$this->bindings[$type] = array_values(array_merge($this->bindings[$type], $value));
+		} else {
+			$this->bindings[$type][] = $value;
+		}
+
+		return $this;
 	}
   
   /**
