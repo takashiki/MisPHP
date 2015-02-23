@@ -46,6 +46,74 @@ class Grammar
 	}
   
   /**
+	 * Compile an insert statement into SQL.
+	 *
+	 * @param  \mis\db\query\Builder  $query
+	 * @param  array  $values
+	 * @return string
+	 */
+	public function compileInsert(Builder $query, array $values) {
+		$table = $this->wrapTable($query->from);
+
+		if (! is_array(reset($values))) {
+			$values = array($values);
+		}
+
+		$columns = $this->columnize(array_keys(reset($values)));
+
+		$parameters = $this->parameterize(reset($values));
+
+		$value = array_fill(0, count($values), "($parameters)");
+
+		$parameters = implode(', ', $value);
+
+		return "insert into $table ($columns) values $parameters";
+	}
+  
+  /**
+	 * Compile an update statement into SQL.
+	 *
+	 * @param  \mis\db\query\Builder  $query
+	 * @param  array  $values
+	 * @return string
+	 */
+	public function compileUpdate(Builder $query, $values) {
+		$table = $this->wrapTable($query->from);
+
+		$columns = array();
+
+		foreach ($values as $key => $value) {
+			$columns[] = $this->wrap($key).' = '.$this->parameter($value);
+		}
+
+		$columns = implode(', ', $columns);
+
+		if (isset($query->joins)) {
+			$joins = ' '.$this->compileJoins($query, $query->joins);
+		} else {
+			$joins = '';
+		}
+
+		$where = $this->compileWheres($query);
+
+		return trim("update {$table}{$joins} set $columns $where");
+	}
+  
+  /**
+	 * Compile a delete statement into SQL.
+	 *
+	 * @param  \mis\db\query\Builder  $query
+	 * @return string
+	 */
+	public function compileDelete(Builder $query) {
+		$table = $this->wrapTable($query->from);
+
+		$where = is_array($query->wheres) ? $this->compileWheres($query) : '';
+
+		return trim("delete from $table ".$where);
+	}
+  
+  /**
 	 * Compile the components necessary for a select clause.
 	 *
 	 * @param  \mis\db\query\Builder
@@ -277,6 +345,16 @@ class Grammar
 	 */
 	public function parameter($value) {
 		return $this->isExpression($value) ? $value->getValue() : '?';
+	}
+  
+  /**
+	 * Create query parameter place-holders for an array.
+	 *
+	 * @param  array   $values
+	 * @return string
+	 */
+	public function parameterize(array $values) {
+		return implode(', ', array_map(array($this, 'parameter'), $values));
 	}
   
   /**

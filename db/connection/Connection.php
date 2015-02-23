@@ -5,6 +5,7 @@ use PDO;
 use Closure;
 use DateTime;
 use Exception;
+use RuntimeException;
 use mis\db\query\grammar\Grammar as QueryGrammar;
 use mis\db\query\Builder as QueryBuilder;
 
@@ -37,6 +38,13 @@ class Connection implements ConnectionInterface
 	 * @var int
 	 */
 	protected $fetchMode = PDO::FETCH_ASSOC;
+  
+  /**
+	 * The number of active transactions.
+	 *
+	 * @var int
+	 */
+	protected $transactions = 0;
   
   /**
 	 * All of the queries run against the connection.
@@ -135,37 +143,74 @@ class Connection implements ConnectionInterface
 	 * @return array
 	 */
 	public function select($query, $bindings = array(), $useReadPdo = true) {
-		return $this->run($query, $bindings, $useReadPdo);
+		return $this->run($query, $bindings, 'select', $useReadPdo);
 	}
   
   /**
-	 * Get the PDO connection to use for a select query.
+	 * Run a insert statement against the database.
 	 *
-	 * @param  bool  $useReadPdo
-	 * @return \PDO
+	 * @param  string  $query
+	 * @param  array  $bindings
+	 * @return array
 	 */
-	protected function getPdoForSelect($useReadPdo = true) {
-		return $useReadPdo ? $this->getReadPdo() : $this->getPdo();
+	public function insert($query, $bindings = array()) {
+		return $this->run($query, $bindings, 'insert');
 	}
   
+  /**
+	 * Run a update statement against the database.
+	 *
+	 * @param  string  $query
+	 * @param  array  $bindings
+	 * @return array
+	 */
+	public function update($query, $bindings = array()) {
+		return $this->run($query, $bindings, 'update');
+	}
+  
+  /**
+	 * Run a delete statement against the database.
+	 *
+	 * @param  string  $query
+	 * @param  array  $bindings
+	 * @return array
+	 */
+	public function delete($query, $bindings = array()) {
+		return $this->run($query, $bindings, 'delete');
+	}
+
   /**
 	 * Run a SQL statement and log its execution context.
 	 *
-	 * @param  string    $query
-	 * @param  array     $bindings
-	 * @param  \Closure  $callback
+	 * @param  string  $query
+	 * @param  array  $bindings
+   * @param  string  $type
+	 * @param  bool  $useReadPdo
 	 * @return mixed
 	 *
 	 * @throws \mis\db\QueryException
 	 */
-	protected function run($query, $bindings, $useReadPdo) {
+	protected function run($query, $bindings, $type, $useReadPdo = false) {
 		$start = microtime(true);
     
-    $statement = $this->getPdoForSelect($useReadPdo)->prepare($query);
+    $pdo = $this->getPdoForQuery($useReadPdo);
+    
+    $statement = $pdo->prepare($query);
 
-	  $statement->execute($this->prepareBindings($bindings));
+	  $result = $statement->execute($this->prepareBindings($bindings));
 
-		$result = $statement->fetchAll($this->getFetchMode());
+		switch ($type) {
+      case 'select':
+        $result = $statement->fetchAll($this->getFetchMode());
+        break;
+      case 'insert':
+        $result = $pdo->lastInsertId();
+        break;
+      case 'update':
+      case 'delete':
+        $result = $statement->rowCount();
+        break;
+    }
 
 		$time = $this->getElapsedTime($start);
 
@@ -191,6 +236,16 @@ class Connection implements ConnectionInterface
 
 		return $bindings;
 	}
+    
+  /**
+	 * Get the PDO connection to use for a query.
+	 *
+	 * @param  bool  $useReadPdo
+	 * @return \PDO
+	 */
+	protected function getPdoForQuery($useReadPdo = true) {
+		return $useReadPdo ? $this->getReadPdo() : $this->getPdo();
+	}
   
   /**
 	 * Get the current PDO connection.
@@ -207,9 +262,37 @@ class Connection implements ConnectionInterface
 	 * @return \PDO
 	 */
 	public function getReadPdo() {
-		//if ($this->transactions >= 1) return $this->getPdo();
+		if ($this->transactions >= 1) return $this->getPdo();
 
 		return $this->readPdo ?: $this->pdo;
+	}
+  
+  /**
+	 * Set the PDO connection.
+	 *
+	 * @param  \PDO|null  $pdo
+	 * @return $this
+	 */
+	public function setPdo($pdo) {
+		if ($this->transactions >= 1) {
+			throw new RuntimeException("Can't swap PDO instance while within transaction.");
+    }
+    
+		$this->pdo = $pdo;
+
+		return $this;
+	}
+
+	/**
+	 * Set the PDO connection used for reading.
+	 *
+	 * @param  \PDO|null  $pdo
+	 * @return $this
+	 */
+	public function setReadPdo($pdo) {
+		$this->readPdo = $pdo;
+
+		return $this;
 	}
   
   /**

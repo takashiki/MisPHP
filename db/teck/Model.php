@@ -72,7 +72,7 @@ class Model
     
     $this->query->from($this->getTable());
   }
-  
+
   /**
 	 * Get the table associated with the model.
 	 *
@@ -107,7 +107,7 @@ class Model
 	 * Resolve a connection instance.
 	 *
 	 * @param  string  $connection
-	 * @return \Illuminate\Database\Connection
+	 * @return \mis\db\connection\Connection
 	 */
 	public static function resolveConnection($connection = null) {
 		return static::$resolver->connection($connection);

@@ -1,6 +1,7 @@
 <?php
 namespace mis\db\query;
 
+use InvalidArgumentException;
 use mis\db\connection\ConnectionInterface;
 use mis\db\query\grammar\Grammar;
 use mis\db\query\Expression;
@@ -132,10 +133,7 @@ class Builder
 	 */
 	protected $operators = array(
 		'=', '<', '>', '<=', '>=', '<>', '!=',
-		'%', '!%', '~', 'ilike',
-		'&', '|', '^', '<<', '>>',
-		'rlike', 'regexp', 'not regexp',
-		'~', '~*', '!~', '!~*',
+		'%', '!%', '~'
 	);
   
   /**
@@ -298,10 +296,71 @@ class Builder
     }
     
     if (! in_array($operator, $this->operators)) {
-      throw new Exception("查询条件无效");
+      throw new InvalidArgumentException("Invalid query");
     }
     
     return array($column, $operator);
+	}
+  
+  /**
+	 * Insert a new record into the database.
+	 *
+	 * @param  array  $values
+	 * @return bool
+	 */
+	public function insert(array $values) {
+		if (! is_array(reset($values))) {
+			$values = array($values);
+		} else {
+			foreach ($values as $key => $value) {
+				ksort($value); 
+        $values[$key] = $value;
+			}
+		}
+
+		$bindings = array();
+
+		foreach ($values as $record) {
+			foreach ($record as $value) {
+				$bindings[] = $value;
+			}
+		}
+
+		$sql = $this->grammar->compileInsert($this, $values);
+
+		$bindings = $this->cleanBindings($bindings);
+
+		return $this->connection->insert($sql, $bindings);
+	}
+  
+  /**
+	 * Update a record in the database.
+	 *
+	 * @param  array  $values
+	 * @return int
+	 */
+	public function update(array $values) {
+		$bindings = array_values(array_merge($values, $this->getBindings()));
+
+		$sql = $this->grammar->compileUpdate($this, $values);
+    
+    $bindings = $this->cleanBindings($bindings);
+
+		return $this->connection->update($sql, $bindings);
+	}
+  
+  /**
+	 * Delete a record from the database.
+	 *
+	 * @param  mixed  $id
+	 * @return int
+	 */
+	public function delete($id = null) {
+		if (! is_null($id)) $this->where('id', $id);
+
+		$sql = $this->grammar->compileDelete($this);
+
+		return $this->connection->delete($sql, $this->getBindings());
 	}
   
   /**
@@ -314,9 +373,8 @@ class Builder
 	 * @throws \InvalidArgumentException
 	 */
 	public function addBinding($value, $type = 'where') {
-		if ( ! array_key_exists($type, $this->bindings)) {
-			throw new Exception("Invalid binding type: {$type}.");
-      //throw new InvalidArgumentException("Invalid binding type: {$type}.");
+		if (! array_key_exists($type, $this->bindings)) {
+      throw new InvalidArgumentException("Invalid binding type: {$type}.");
 		}
 
 		if (is_array($value)) {
@@ -335,6 +393,18 @@ class Builder
 	 */
 	public function getBindings() {
 		return array_flatten($this->bindings);
+	}
+  
+  /**
+	 * Remove all of the expressions from a list of bindings.
+	 *
+	 * @param  array  $bindings
+	 * @return array
+	 */
+	protected function cleanBindings(array $bindings) {
+		return array_values(array_filter($bindings, function($binding) {
+			return ! $binding instanceof Expression;
+		}));
 	}
   
   /**
