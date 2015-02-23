@@ -17,12 +17,16 @@ MisPHP是我的一个练习作品，最初是参考Slim、flight、b2core等微�
 
 anonymous function
 
-```$app->route('/', function() {echo 'null';});```
+```php
+$app->route('/', function() {echo 'null';});
+```
 
-```function home() {
+```php
+function home() {
   echo 'welcome';
 }
-$app->route('/', 'home');```
+$app->route('/', 'home');
+```
 
 ## Contributing
 
