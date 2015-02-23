@@ -1,23 +1,28 @@
 # MisPHP (Kernel)
 
-> **Note:** This repository contains the core code of the MisPHP framework. If you want to build an application using MisPHP, visit the main [MisPHP repository](https://github.com/laravel/laravel).
+> **Note:** This repository contains the core code of the MisPHP framework. 
+If you want to build an application using MisPHP, visit the main [MisPHP repository](https://github.com/takashiki/mis).
 
 ## MisPHP Framework
 
-I worte MisPHP for the purpose of learning. At first, I refered to Slim, flight, b2core and other micro php frameworks. However, I was impressed by the elegance and strength of laravel. Now, MisPHP is mostly like laravel and some code is basicly based on laravel's.
-MisPHP是我的一个练习作品，最初是参考Slim、flight、b2core等微框架来编写的，但有感于laravel的强大和优美，又开始主要参考laravel来编写了，本框架部分代码直接在laravel代码基础上修改而成。
+I worte MisPHP for the purpose of learning. At first, I refered to Slim, flight, b2core and other micro php frameworks. 
+However, I was impressed by the elegance and strength of laravel. Now, MisPHP is mostly like laravel and some code is basicly based on laravel's.
+
+MisPHP是我的一个练习作品，最初是参考Slim、flight、b2core等微框架来编写的，
+但有感于laravel的强大和优美，又开始主要参考laravel来编写了，本框架部分代码直接在laravel代码基础上修改而成。
 
 ## Documentation
 
 ### Routing
 
 anonymous function
-`$app->route('/', function() {echo 'null';});`
 
-`function home() {
+```$app->route('/', function() {echo 'null';});```
+
+```function home() {
   echo 'welcome';
 }
-$app->route('/', 'home');`
+$app->route('/', 'home');```
 
 ## Contributing
 
