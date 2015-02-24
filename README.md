@@ -51,7 +51,7 @@ class Home
     echo 'welcome';
   }
 }
-$app->route('/', 'Home->index');
+$app->route('/', 'Home::index');
 ```
 
 本框架支持pathinfo模式的默认路由，'/home/index'会被解析到'HomeController'的'index'方法。
