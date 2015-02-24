@@ -21,11 +21,81 @@ anonymous function
 $app->route('/', function() {echo 'null';});
 ```
 
+function
+
 ```php
 function home() {
   echo 'welcome';
 }
 $app->route('/', 'home');
+```
+
+member function
+
+```php
+class Home
+{
+  public function index() {
+    echo 'welcome';
+  }
+}
+$app->route('/', 'Home->index');
+```
+
+static member function
+
+```php
+class Home
+{
+  public static function index() {
+    echo 'welcome';
+  }
+}
+$app->route('/', 'Home->index');
+```
+
+本框架支持pathinfo模式的默认路由，'/home/index'会被解析到'HomeController'的'index'方法。
+
+### Model
+
+init
+
+```php
+use mis\db\teck\Model;
+
+class User extends Model
+{
+
+}
+```
+
+select
+
+```php
+User::get();
+User::where('column_name', 'value')->get();
+User::where('column_name >', 'value')->get();
+User::where(array('column_name operator' => 'value', ...))->get();
+```
+
+insert
+
+```php
+User::insert(array('column_name' => 'value', ...));
+User::insert(array(array('column_name' => 'value', ...), ...));
+```
+
+update
+
+```php
+User::where('column_name', 'value')->update(array('column_name' => 'value', ...));
+```
+
+delete
+
+```php
+User::delete('id_value');
+User::where('column_name', 'value')->delete();
 ```
 
 ## Contributing
