@@ -5,9 +5,17 @@ use mis\net\Request;
 use mis\net\Dispatcher;
 use mis\db\DatabaseManager;
 use mis\db\Capsule;
+use mis\di\Container;
 
-class Mis
+class Mis extends Container
 {
+  /**
+	 * The MisPHP framework version.
+	 *
+	 * @var string
+	 */
+	const VERSION = '0.3.1-dev';
+  
   protected $request;
   
   protected $router;
@@ -26,6 +34,15 @@ class Mis
     $this->loadEvents();
     DatabaseManager::bootTeck($this);
   }
+  
+  /**
+	 * Get the version number of the application.
+	 *
+	 * @return string
+	 */
+	public function version() {
+		return static::VERSION;
+	}
   
   public function run() {
     $dispacthed = $this->dispacther->dispatch($this->request);
