@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "app\\controller\\": "app/controller/"
+            "App\\": "app/"
         }
     }
 }
