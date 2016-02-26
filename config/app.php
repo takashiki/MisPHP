@@ -1,7 +1,8 @@
 <?php
+
 return [
-    'url' => '',
+    'url'      => '',
     'timezone' => 'Asia/Shanghai',
-    'locale' => 'zh',
-    'key' => '',
+    'locale'   => 'zh',
+    'key'      => '',
 ];

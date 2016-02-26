@@ -1,7 +1,8 @@
 <?php
+
 namespace app\controller;
 
-use \Mis;
+use Mis;
 
 class HomeController
 {
